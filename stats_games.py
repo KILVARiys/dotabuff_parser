@@ -19,6 +19,7 @@ session.headers.update({'User-Agent': ua.chrome})
 # Запросы с использованием сессии
 dota = session.get(f"https://ru.dotabuff.com/players/{final}")
 dota_record = session.get(f"https://ru.dotabuff.com/players/{final}/records")
+dota_sens = session.get(f"https://ru.dotabuff.com/players/{final}/scenarios")
 
 # Проверка на работоспособность и продолжение кода
 if dota.status_code == 200:
@@ -60,7 +61,6 @@ if dota_record.status_code == 200:
     records = BeautifulSoup(dota_record.content, "html5lib")
     record_stat = records.findAll('div', class_='content-inner')
     for rec in record_stat:
-        records_text = rec.text.strip()
         req = rec.findAll('div', 'player-records')
         long_match = rec.findAll('div', 'record')[0].find('div', class_='value').text.strip()
         most_kills = rec.findAll('div', 'record')[1].find('div', class_='value').text.strip()
@@ -74,6 +74,25 @@ if dota_record.status_code == 200:
         print('Рекорды игрока:')
         print(f"Самый длинный матч: {long_match} |Большее кол-во убийст: {most_kills} |Наибольшее кол-во добиваний: {most_denau_creeps} |\n"
               f"Найбольшее число золота: {most_farm} |Найбольшее число опыта: {most_exp} |Больше всего урона по игрокам: {most_dmg_hero} |\n"
-              f"Наилучшее УСП: {most_ycp} |Найбольшая серия побед: {most_record_wins} |Найбольшая серия поражений: {most_record_loses} |")
+              f"Наилучшее УСП: {most_ycp} |Найбольшая серия побед: {most_record_wins} |Найбольшая серия поражений: {most_record_loses} |\n")
+    #Получаем различные сценария типа: Игр в группе, кол-во игр в определённом режиме и т.д
+if dota_sens.status_code == 200:
+    sens_soup = BeautifulSoup(dota_sens.content, "html5lib")
+    sens_stat = sens_soup.findAll('table', class_='r-tab-enabled')
+    for sens in sens_stat:
+        def_matchs = sens.findAll('tbody')[2].find('tr').findAll('td')[1].text.strip()
+        def_matchs_winrate = sens.findAll('tbody')[2].find('tr').findAll('td')[2].text.strip()
+        rating_matchs = sens.findAll('tbody')[2].findAll('tr')[1].findAll('td')[1].text.strip()
+        rating_matchs_winrate = sens.findAll('tbody')[2].findAll('tr')[1].findAll('td')[2].text.strip()
+        daer = sens.findAll('tbody')[4].find('tr').findAll('td')[1].text.strip()
+        daer_winrate = sens.findAll('tbody')[4].find('tr').findAll('td')[2].text.strip()
+        radiant = sens.findAll('tbody')[4].findAll('tr')[1].findAll('td')[1].text.strip()
+        radiant_winrate = sens.findAll('tbody')[4].findAll('tr')[1].findAll('td')[2].text.strip()
+        print('Статистика матчей:')
+        print(f"Обычные матчи: {def_matchs} |{def_matchs_winrate}|\n"
+              f"Рейтинговые матчи: {rating_matchs} |{rating_matchs_winrate}|\n"
+              f"Игры за даер: {daer} |{daer_winrate}|\n"
+              f"Игры за редиант: {radiant} |{radiant_winrate}|")
+
 else:
     print('Ошибка при запросе к Dotabuff.')
