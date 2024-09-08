@@ -74,7 +74,7 @@ if rust.status_code == 200:
         print(f"Информация о аккаунте: {base_text_no_extra_spaces}")
 
     for stats in account_stat:
-        stat_rust_text = stats.findAll('div', class_='main_search_stats_item_content')[0].text.strip() #Убрать по оканчании настройки данного отдела(переменная для проверки html кода)
+        stat_rust_text = stats.findAll('div', class_='main_search_stats_item_content')[0].text.strip() #Убрать по окончании настройки данного отдела(переменная для проверки html кода)
         print('Игровая статистика:')
         kill_stat = stats.findAll('div', class_='main_search_stats_item_content_info')[0].findAll('div')[1].text.strip()
         hit_stat = stats.findAll('div', class_='main_search_stats_item_content_info')[7].findAll('div')[1].text.strip()
