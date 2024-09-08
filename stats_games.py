@@ -18,10 +18,9 @@ session.headers.update({'User-Agent': ua.chrome})
 
 # Запросы с использованием сессии
 dota = session.get(f"https://ru.dotabuff.com/players/{final}")
-rust = session.get(f"https://ruststats.cc/stats/user/{final}")
+dota_record = session.get(f"https://ru.dotabuff.com/players/{final}/records")
 
 # Проверка на работоспособность и продолжение кода
-# DOTABUFF
 if dota.status_code == 200:
     print('Запрос к Dotabuff выполнен успешно.')
     soup = BeautifulSoup(dota.content, "html5lib")
@@ -56,30 +55,25 @@ if dota.status_code == 200:
             print(f"{hero_name} | Последняя игра была сыграна: {hero_data} | Сыграно: {hero_stat_match} матчей | Winrate: {hero_stat_winrate} | KDA: {hero_stat_ycp}")
     except AttributeError:
         print('Список окончен\n')
+    #Получаем рекорды игрока
+if dota_record.status_code == 200:
+    records = BeautifulSoup(dota_record.content, "html5lib")
+    record_stat = records.findAll('div', class_='content-inner')
+    for rec in record_stat:
+        records_text = rec.text.strip()
+        req = rec.findAll('div', 'player-records')
+        long_match = rec.findAll('div', 'record')[0].find('div', class_='value').text.strip()
+        most_kills = rec.findAll('div', 'record')[1].find('div', class_='value').text.strip()
+        most_denau_creeps = rec.findAll('div', 'record')[2].find('div', class_='value').text.strip()
+        most_farm = rec.findAll('div', 'record')[5].find('div', class_='value').text.strip()
+        most_exp = rec.findAll('div', 'record')[6].find('div', class_='value').text.strip()
+        most_dmg_hero = rec.findAll('div', 'record')[7].find('div', class_='value').text.strip()
+        most_ycp = rec.findAll('div', 'record')[10].find('div', class_='value').text.strip()
+        most_record_wins = rec.findAll('div', 'record')[12].find('div', class_='value').text.strip()
+        most_record_loses = rec.findAll('div', 'record')[13].find('div', class_='value').text.strip()
+        print('Рекорды игрока:')
+        print(f"Самый длинный матч: {long_match} |Большее кол-во убийст: {most_kills} |Наибольшее кол-во добиваний: {most_denau_creeps} |\n"
+              f"Найбольшее число золота: {most_farm} |Найбольшее число опыта: {most_exp} |Больше всего урона по игрокам: {most_dmg_hero} |\n"
+              f"Наилучшее УСП: {most_ycp} |Найбольшая серия побед: {most_record_wins} |Найбольшая серия поражений: {most_record_loses} |")
 else:
     print('Ошибка при запросе к Dotabuff.')
-
-# RUSTSTATS
-if rust.status_code == 200:
-    print('Запрос к RustStats выполнен успешно.')
-    soup_rust = BeautifulSoup(rust.content, "html5lib")
-    account_info = soup_rust.findAll('div', class_='main_search_profile')
-    account_stat = soup_rust.findAll('div', class_='main_search_stats')
-
-    print("\nСтатистика RUST:")
-    for info in account_info:
-        base_text = info.find('div', class_='main_search_profile_items').text.strip()
-        # Убираем лишние пробелы
-        base_text_no_extra_spaces = ' '.join(base_text.split())
-        print(f"Информация о аккаунте: {base_text_no_extra_spaces}")
-
-    for stats in account_stat:
-        stat_rust_text = stats.findAll('div', class_='main_search_stats_item_content')[0].text.strip() #Убрать по окончании настройки данного отдела(переменная для проверки html кода)
-        print('Игровая статистика:')
-        kill_stat = stats.findAll('div', class_='main_search_stats_item_content_info')[0].findAll('div')[1].text.strip()
-        hit_stat = stats.findAll('div', class_='main_search_stats_item_content_info')[7].findAll('div')[1].text.strip()
-        headshot_stat = stats.findAll('div', class_='main_search_stats_item_content_info')[5].findAll('div')[1].text.strip()
-
-        print(f"Убийств: {kill_stat}|Процент попаданий: {hit_stat}|Процент голов: {headshot_stat}")
-else:
-    print('Ошибка при запросе к RustStats.')
