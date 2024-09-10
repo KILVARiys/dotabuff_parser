@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 ua = UserAgent()
 
 # Ввод ссылки/ID стим профиля
-url_steam = "https://steamcommunity.com/profiles/76561199097155123"
+url_steam = input('Введите url или id стим профиля: ')
 # Извлечение ID профиля из ссылки
 result = ''.join(c if c.isdigit() else ' ' for c in url_steam).split()
 id_steam = [int(item) for item in result]
@@ -60,39 +60,44 @@ if dota.status_code == 200:
 if dota_record.status_code == 200:
     records = BeautifulSoup(dota_record.content, "html5lib")
     record_stat = records.findAll('div', class_='content-inner')
-    for rec in record_stat:
-        req = rec.findAll('div', 'player-records')
-        long_match = rec.findAll('div', 'record')[0].find('div', class_='value').text.strip()
-        most_kills = rec.findAll('div', 'record')[1].find('div', class_='value').text.strip()
-        most_denau_creeps = rec.findAll('div', 'record')[2].find('div', class_='value').text.strip()
-        most_farm = rec.findAll('div', 'record')[5].find('div', class_='value').text.strip()
-        most_exp = rec.findAll('div', 'record')[6].find('div', class_='value').text.strip()
-        most_dmg_hero = rec.findAll('div', 'record')[7].find('div', class_='value').text.strip()
-        most_ycp = rec.findAll('div', 'record')[10].find('div', class_='value').text.strip()
-        most_record_wins = rec.findAll('div', 'record')[12].find('div', class_='value').text.strip()
-        most_record_loses = rec.findAll('div', 'record')[13].find('div', class_='value').text.strip()
-        print('Рекорды игрока:')
-        print(f"Самый длинный матч: {long_match} |Большее кол-во убийст: {most_kills} |Наибольшее кол-во добиваний: {most_denau_creeps} |\n"
-              f"Найбольшее число золота: {most_farm} |Найбольшее число опыта: {most_exp} |Больше всего урона по игрокам: {most_dmg_hero} |\n"
-              f"Наилучшее УСП: {most_ycp} |Найбольшая серия побед: {most_record_wins} |Найбольшая серия поражений: {most_record_loses} |\n")
+    try:
+        for rec in record_stat:
+            req = rec.findAll('div', 'player-records')
+            long_match = rec.findAll('div', 'record')[0].find('div', class_='value').text.strip()
+            most_kills = rec.findAll('div', 'record')[1].find('div', class_='value').text.strip()
+            most_denau_creeps = rec.findAll('div', 'record')[2].find('div', class_='value').text.strip()
+            most_farm = rec.findAll('div', 'record')[5].find('div', class_='value').text.strip()
+            most_exp = rec.findAll('div', 'record')[6].find('div', class_='value').text.strip()
+            most_dmg_hero = rec.findAll('div', 'record')[7].find('div', class_='value').text.strip()
+            most_ycp = rec.findAll('div', 'record')[10].find('div', class_='value').text.strip()
+            most_record_wins = rec.findAll('div', 'record')[12].find('div', class_='value').text.strip()
+            most_record_loses = rec.findAll('div', 'record')[13].find('div', class_='value').text.strip()
+            print('Рекорды игрока:')
+            print(f"Самый длинный матч: {long_match} |Большее кол-во убийст: {most_kills} |Наибольшее кол-во добиваний: {most_denau_creeps} |\n"
+                  f"Найбольшее число золота: {most_farm} |Найбольшее число опыта: {most_exp} |Больше всего урона по игрокам: {most_dmg_hero} |\n"
+                  f"Наилучшее УСП: {most_ycp} |Найбольшая серия побед: {most_record_wins} |Найбольшая серия поражений: {most_record_loses} |\n")
+    except IndexError:
+        print('Список окончен')
     #Получаем различные сценария типа: Игр в группе, кол-во игр в определённом режиме и т.д
 if dota_sens.status_code == 200:
     sens_soup = BeautifulSoup(dota_sens.content, "html5lib")
     sens_stat = sens_soup.findAll('table', class_='r-tab-enabled')
-    for sens in sens_stat:
-        def_matchs = sens.findAll('tbody')[2].find('tr').findAll('td')[1].text.strip()
-        def_matchs_winrate = sens.findAll('tbody')[2].find('tr').findAll('td')[2].text.strip()
-        rating_matchs = sens.findAll('tbody')[2].findAll('tr')[1].findAll('td')[1].text.strip()
-        rating_matchs_winrate = sens.findAll('tbody')[2].findAll('tr')[1].findAll('td')[2].text.strip()
-        daer = sens.findAll('tbody')[4].find('tr').findAll('td')[1].text.strip()
-        daer_winrate = sens.findAll('tbody')[4].find('tr').findAll('td')[2].text.strip()
-        radiant = sens.findAll('tbody')[4].findAll('tr')[1].findAll('td')[1].text.strip()
-        radiant_winrate = sens.findAll('tbody')[4].findAll('tr')[1].findAll('td')[2].text.strip()
-        print('Статистика матчей:')
-        print(f"Обычные матчи: {def_matchs} |{def_matchs_winrate}|\n"
-              f"Рейтинговые матчи: {rating_matchs} |{rating_matchs_winrate}|\n"
-              f"Игры за даер: {daer} |{daer_winrate}|\n"
-              f"Игры за редиант: {radiant} |{radiant_winrate}|")
-
+    try:
+        for sens in sens_stat:
+            def_matchs = sens.findAll('tbody')[2].find('tr').findAll('td')[1].text.strip()
+            def_matchs_winrate = sens.findAll('tbody')[2].find('tr').findAll('td')[2].text.strip()
+            rating_matchs = sens.findAll('tbody')[2].findAll('tr')[1].findAll('td')[1].text.strip()
+            rating_matchs_winrate = sens.findAll('tbody')[2].findAll('tr')[1].findAll('td')[2].text.strip()
+            daer = sens.findAll('tbody')[4].find('tr').findAll('td')[1].text.strip()
+            daer_winrate = sens.findAll('tbody')[4].find('tr').findAll('td')[2].text.strip()
+            radiant = sens.findAll('tbody')[4].findAll('tr')[1].findAll('td')[1].text.strip()
+            radiant_winrate = sens.findAll('tbody')[4].findAll('tr')[1].findAll('td')[2].text.strip()
+            print('Статистика матчей:')
+            print(f"Обычные матчи: {def_matchs} |{def_matchs_winrate}|\n"
+                  f"Рейтинговые матчи: {rating_matchs} |{rating_matchs_winrate}|\n"
+                  f"Игры за даер: {daer} |{daer_winrate}|\n"
+                  f"Игры за редиант: {radiant} |{radiant_winrate}|")
+    except IndexError:
+        print('Список окончен')
 else:
     print('Ошибка при запросе к Dotabuff.')
