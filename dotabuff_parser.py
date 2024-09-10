@@ -1,6 +1,8 @@
 import requests
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
+import os
+import html5lib
 
 # Создание объекта UserAgent
 ua = UserAgent()
@@ -101,3 +103,4 @@ if dota_sens.status_code == 200:
         print('Список окончен')
 else:
     print('Ошибка при запросе к Dotabuff.')
+os.system('pause')
